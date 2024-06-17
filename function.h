@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdint.h>
+#include <string.h>
 
 struct function {
 
@@ -16,5 +18,6 @@ struct function {
 
 struct function *create_function();
 void free_function(struct function *);
+struct function *func_from_str(char *);
 
 #endif
