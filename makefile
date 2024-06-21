@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wall -g
 TARGET = calc
 SRCS = main.c function.c term.c
 OBJS = $(SRCS:.c=.o)

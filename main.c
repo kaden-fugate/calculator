@@ -7,10 +7,10 @@ int main(){
     struct function *func = create_function();
 
     func = func_from_str(expression);
-    term_from_str("1001x^1");
+    term_from_str("10001(100000)");
     term_from_str(".1001x^x");
     term_from_str("1001.x^3");
-    term_from_str("x^4");
+    term_from_str("(320)(x(xx))^11");
     
     return 0;
 }

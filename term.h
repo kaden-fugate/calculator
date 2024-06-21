@@ -12,10 +12,14 @@
 struct term {
 
     float coefficient;
+    
     struct function *inner;
-    struct function *power;
+    int inner_has_variable;
+    int has_complex_inner;
 
-    int has_variable;
+    struct function *power;
+    int power_has_variable;
+    int has_complex_power;
 
 };
 
@@ -23,5 +27,7 @@ struct term *create_term();
 void free_term(struct term *);
 void term_from_str(char *);
 char *format_coefficient(char *, int *, int *);
+char *get_inner(char *, int *, int *, int *);
+char *get_power(char *);
 
 #endif

@@ -38,7 +38,7 @@ struct function *func_from_str(char *expr) {
     // iterate through all our terms
     while (token) {
 
-        printf("[%d]: %s\n", i, token);
+        // printf("[%d]: %s\n", i, token);
         i++;
 
         token = strtok(NULL, delimiters);
