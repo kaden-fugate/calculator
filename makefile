@@ -1,7 +1,7 @@
-CC = gcc
+CC = g++
 CFLAGS = -Wall -g
 TARGET = calc
-SRCS = main.cpp
+SRCS = main.cpp main_funcs.cpp
 OBJS = $(SRCS:.c=.o)
 
 all: $(TARGET)
