@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -g
 TARGET = calc
-SRCS = main.c function.c term.c
+SRCS = main.cpp
 OBJS = $(SRCS:.c=.o)
 
 all: $(TARGET)
