@@ -83,3 +83,49 @@ input_type parse_input(string input) {
     return opr;
 
 }
+
+// in this function we'll need to handle variable assignment. to do this, this
+// function will need to return the name of the variable being assigned to and
+// the value being assigned to it. to get these values, we'll need to do the
+// following:
+//
+// 1. variable name:
+//      - this should be the easy part, we can simply look at any text before
+//        the '=' and call this the variable name.
+//      - we'll need to put a few constraints on the variable name as it cannot
+//        start with a number, cannot be called 'exit' or 'var_list', and there
+//        are some special characters that it should not be allowed to contain
+// 2. value:
+//      - if the right side of the equation is an int or float, that's great,
+//        we can simply return it.
+//      - if the right side is a matrix, build that matrix and set it as the
+//        value. 
+//      - if the right side is a function, simply call it and it's return value
+//        will be the value that we return
+//      - if the right side contains arithmetic, we'll need to compute it and
+//        return the value
+void assign(string input) {
+
+    string var_name = "", invalid_chars = "`~-=+{}[]|\\';:,<.>/?!@#$%^&*()";
+
+    // get the users variable name
+    for (int i = 0; i < (int) input.length() && input[i] != '='; i++)
+        var_name += input[i];
+
+    // do checks on the variable name
+    if (var_name == "exit") 
+        throw runtime_error("variable name cannot be 'exit'.");
+    
+    else if (var_name == "var_list") 
+        throw runtime_error("variable name cannot be 'var_list'.");
+
+    else if ((int) var_name[0] >= 48 && (int) var_name[0] <= 57) 
+        throw runtime_error("first character of variable name cannot be" 
+                            " numeric value.");
+    else if (var_name.find_first_of(invalid_chars) != string::npos) {
+        stringstream err_msg;
+        err_msg << "variable name cannot contain '" 
+                << var_name.find_first_of(invalid_chars) << "'.";
+    }
+
+}

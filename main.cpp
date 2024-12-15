@@ -1,5 +1,4 @@
 #include <unordered_map>
-#include <stdexcept>
 
 #include "main_funcs.hpp"
 #include "variable.hpp"
@@ -62,11 +61,19 @@ int main() {
         type = parse_input(input);
         print_type(type);
 
+        try{
+            if (type == ASSIGN) 
+                assign(input);
+            
+            else if (type == FUNC) {}
+            else if (type == PRINT) {}
+            else if (type == VARS) {}
+        }
+        catch (const exception &err) {
+            cout << "ERROR: " << err.what() << endl;
+        }
         // handle user input based on the type of input
-        if (type == ASSIGN) {}
-        else if (type == FUNC) {}
-        else if (type == PRINT) {}
-        else if (type == VARS) {}
+        
 
     } while(type != EXIT);
 

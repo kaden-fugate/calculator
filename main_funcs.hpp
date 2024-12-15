@@ -3,8 +3,11 @@
 
 #include <iostream>
 #include <string>
+#include <stdexcept>
+#include <sstream>
 
-using std::string, std::cin, std::cout, std::endl;
+using std::string, std::cin, std::cout, std::endl, std::exception,
+      std::runtime_error, std::stringstream;
 
 enum input_type {
     ASSIGN,
@@ -18,5 +21,6 @@ enum input_type {
 void print_type(input_type);
 string get_input();
 input_type parse_input(string);
+void assign(string);
 
 #endif
