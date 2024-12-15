@@ -1,7 +1,14 @@
-#include <vector>
+#include <unordered_map>
 #include <stdexcept>
 
 #include "main_funcs.hpp"
+#include "variable.hpp"
+#include "prim_var.hpp"
+#include "matrix.hpp"
+
+using std::unordered_map;
+using std::string;
+using std::cin;
 
 int main() {
 
@@ -17,9 +24,11 @@ int main() {
     //         in variable list
     //      c. if calling function, output result of function to terminal
     //      d. if 'exit', free memory, exit program
-    //      e. if error, catch error and output error message to terminal
-
-    std::string input = "";
+    //      e. if existing variable name, print "<var_name> = <var_val>"
+    //      f. if 'var_list' is user input, print all variables and their 
+    //         values
+    //         - note: matrices/vectors will simply print their dimensions
+    //      f. if error, catch error and output error message to terminal
 
     // we'll need to declare the memory for variables here but we'll need to
     // further examine how we can store all types of user variables. first, 
@@ -40,11 +49,18 @@ int main() {
     //      - note: we'll type cast these to a pointer of the parent class so
     //              that we can store both in the map
 
+    string input = "";
+    unordered_map<string, variable *> var_list;
+
     // do prompt loop while user input is not 'exit'
     do {
 
-        printf("> ");
-        std::cin >> input;
+        // user input (see main_funcs)
+        input = get_input();
+        std::cout << input;
+
+        // parse users input to find input type (see main_funcs)
+        parse_input(input);
 
     }while(input != "exit");
 

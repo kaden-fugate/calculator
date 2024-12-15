@@ -4,6 +4,21 @@
 #include <iostream>
 #include <string>
 
-std::string get_input();
+using std::string;
+using std::cin;
+using std::cout;
+
+enum input_type {
+    ASSIGN,
+    ARITH,
+    FUNC,
+    PRINT,
+    VARS,
+    EXIT,
+    ERR
+};
+
+string get_input();
+input_type parse_input(string);
 
 #endif
