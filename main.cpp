@@ -7,8 +7,6 @@
 #include "matrix.hpp"
 
 using std::unordered_map;
-using std::string;
-using std::cin;
 
 int main() {
 
@@ -51,18 +49,26 @@ int main() {
 
     string input = "";
     unordered_map<string, variable *> var_list;
+    input_type type;
 
     // do prompt loop while user input is not 'exit'
     do {
 
         // user input (see main_funcs)
         input = get_input();
-        std::cout << input;
+        std::cout << "input: " << input << endl;
 
         // parse users input to find input type (see main_funcs)
-        parse_input(input);
+        type = parse_input(input);
+        print_type(type);
 
-    }while(input != "exit");
+        // handle user input based on the type of input
+        if (type == ASSIGN) {}
+        else if (type == FUNC) {}
+        else if (type == PRINT) {}
+        else if (type == VARS) {}
+
+    } while(type != EXIT);
 
     // free mem
 
