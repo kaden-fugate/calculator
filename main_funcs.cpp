@@ -106,6 +106,60 @@ input_type parse_input(string input) {
 //        return the value
 void assign(string input) {
 
+    // variable name, will throw errors if invalid
+    string var_name = get_var_name(input);
+
+    // value
+    // this will be a bit more difficult than how it's described above. this is
+    // because of the fact that the right side of the equation can look like:
+    //
+    // expression --> (x * f(x) + 1.2 * 1) / 3 * 2
+    //
+    // with this, we'll need to do something along the lines of the following:
+    // 
+    // 1. iterate through the right-side of the equation doing 3 things:
+    //      a. if variable is referenced, fetch value, throw error if does not
+    //         exist.
+    //      b. if function is referenced, get output, throw error if does not
+    //         exist or if input is wrong in some sort of way
+    //      c. if invalid character is referenced, throw error
+    // 2. use PEMDAS to move through the equation in the correct order.
+    // 3. make a variable pointer initialized to the correct output value.
+    //    we'll need to figure out what type the variable is so we can
+    //    initialize it (because we're using templates). for now, we'll only
+    //    support storing int's and doubles as these are really the only things
+    //    you can do arithmetic with. in the future it would be nice to store
+    //    variables as strings as well (though this will be more applicable if
+    //    plotting is ever added).
+    //
+    //    here's how we'll determine how we should return as our value:
+    //     
+    //    a. if []'s, we'll start processing it as a matrix where values will
+    //       be delimited by " "'s (space characters) and new rows will be 
+    //       delimited by ";"'s (i.e. matlab style, this programs inspiration).
+    //       of course, some further checks will need to be made on the 
+    //       dimensions of the matrix. for now, block matrices will not be
+    //       implemented.
+    //
+    //       we can use the process in (b.) directly below this to parse each
+    //       individual element in the matrix.
+    //    b. if processing an expression (something like the expression given
+    //       above at the start of this comment block), we know two things:
+    //          i.   if there is a double in the expression, then the output 
+    //               will also be a double. 
+    //          ii.  if there are only integers, then the output will only be 
+    //               a double if the expression is divided by a non-divisor of
+    //               the numerator.
+    //          iii. else, output should be stored as an int for precision that
+    //               integer arithemetic offers
+
+}
+
+// this function simply checks that the variable name given by the user is 
+// valid. if valid, it will return the variable name as a string. if not, it
+// will throw an error to be caught in main.
+string get_var_name(string input) {
+
     string var_name = "", invalid_chars = "`~-=+{}[]|\\';:,<.>/?!@#$%^&*()";
 
     // get the users variable name
@@ -122,10 +176,14 @@ void assign(string input) {
     else if ((int) var_name[0] >= 48 && (int) var_name[0] <= 57) 
         throw runtime_error("first character of variable name cannot be" 
                             " numeric value.");
+
     else if (var_name.find_first_of(invalid_chars) != string::npos) {
-        stringstream err_msg;
-        err_msg << "variable name cannot contain '" 
-                << var_name.find_first_of(invalid_chars) << "'.";
+        int idx = var_name.find_first_of(invalid_chars);
+        string err_msg = (string) "variable name cannot contain " 
+                        + var_name[idx] + (string) "'s.";
+        throw runtime_error(err_msg);
     }
+
+    return var_name;
 
 }

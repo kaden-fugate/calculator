@@ -22,5 +22,6 @@ void print_type(input_type);
 string get_input();
 input_type parse_input(string);
 void assign(string);
+string get_var_name(string);
 
 #endif
