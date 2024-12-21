@@ -18,10 +18,24 @@ enum input_type {
     NEWLN
 };
 
-void print_type(input_type);
+enum term_type {
+    INT,
+    FLOAT,
+    MATRIX,
+    PARNTH,
+    VAR,
+    FUNC_CALL
+};
+
+void print_input_type(input_type);
+void print_term_type(term_type);
 string get_input();
 input_type parse_input(string);
 void assign(string);
 string get_var_name(string);
+string get_term(string, term_type*);
+string get_parnth_str(string);
+string get_mat_string(string);
+string get_operator(string);
 
 #endif

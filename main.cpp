@@ -59,7 +59,7 @@ int main() {
 
         // parse users input to find input type (see main_funcs)
         type = parse_input(input);
-        print_type(type);
+        print_input_type(type);
 
         try{
             if (type == ASSIGN) 
