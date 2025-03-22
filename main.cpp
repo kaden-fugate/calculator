@@ -1,6 +1,7 @@
 #include <unordered_map>
 
 #include "lexer.hpp"
+#include "parser.hpp"
 
 using std::unordered_map;
 
@@ -57,6 +58,7 @@ int main() {
     vector<Token> tokens;
     vector<string> keywords = {"let"};
     vector<string> funcs = {"func"};
+    Node *root = nullptr;
 
     // do prompt loop while user input is not 'exit'
     do {
@@ -68,7 +70,10 @@ int main() {
         // tokenize user input
         Lexer lexer(input, keywords, funcs);
         tokens = lexer.tokenize();
-        lexer.print_tokens();
+
+        // parse tokenized input into abstract syntax tree
+        Parser parser(tokens);
+        root = parser.expression();
 
     } while(input != "exit");
 

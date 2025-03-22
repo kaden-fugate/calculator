@@ -7,23 +7,9 @@
 #include <sstream>
 #include <vector>
 
+#include "token.hpp"
+
 using std::string, std::vector;
-
-enum Type {
-    LONG,
-    INT,
-    MATRIX,
-    FUNC,
-    VAR,
-    OPR,
-    KEY
-};
-
-// will change this later when we want to start adding matrices
-struct Token {
-    string val;
-    Type type; 
-};
 
 class Lexer {
     private:

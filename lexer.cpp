@@ -17,7 +17,7 @@ bool valid_letter(char letter) {
 
 bool valid_opr(char letter) {
     if (letter == '+' || letter == '-' || letter == '*' || letter == '/'
-     || letter == '(' || letter == ')')
+     || letter == '(' || letter == ')' || letter == '=')
         return true;
 
     return false;
@@ -151,7 +151,8 @@ void Lexer::print_tokens() {
     std::cout << "TOKENS: \n";
 
     for (long unsigned int i = 0; i < this->tokens.size(); i++){
-        std::cout << this->tokens[i].val << " " 
-                  << this->tokens[i].type << std::endl;
+        std::cout << "(" << this->tokens[i].val << " " 
+                  << this->tokens[i].type << "), ";
     }
+    std::cout << "\n";
 }
