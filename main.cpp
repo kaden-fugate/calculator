@@ -1,11 +1,18 @@
 #include <unordered_map>
 
-#include "main_funcs.hpp"
-#include "variable.hpp"
-#include "prim_var.hpp"
-#include "matrix.hpp"
+#include "lexer.hpp"
 
 using std::unordered_map;
+
+string get_input() {
+
+    string input = "";
+    std::cout << "> ";
+    getline(std::cin, input);
+
+    return input;
+
+}
 
 int main() {
 
@@ -47,35 +54,23 @@ int main() {
     //              that we can store both in the map
 
     string input = "";
-    unordered_map<string, variable *> var_list;
-    input_type type;
+    vector<Token> tokens;
+    vector<string> keywords = {"let"};
+    vector<string> funcs = {"func"};
 
     // do prompt loop while user input is not 'exit'
     do {
 
-        // user input (see main_funcs)
+        // user input
         input = get_input();
-        std::cout << "input: " << input << endl;
+        std::cout << "input: " << input << std::endl;
 
-        // parse users input to find input type (see main_funcs)
-        type = parse_input(input);
-        print_input_type(type);
+        // tokenize user input
+        Lexer lexer(input, keywords, funcs);
+        tokens = lexer.tokenize();
+        lexer.print_tokens();
 
-        try{
-            if (type == ASSIGN) 
-                assign(input);
-            
-            else if (type == FUNC) {}
-            else if (type == PRINT) {}
-            else if (type == VARS) {}
-        }
-        catch (const exception &err) {
-            cout << "ERROR: " << err.what() << endl;
-        }
-        // handle user input based on the type of input
-        
-
-    } while(type != EXIT);
+    } while(input != "exit");
 
     // free mem
 
