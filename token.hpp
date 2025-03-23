@@ -2,10 +2,13 @@
 #define TOKEN_HPP
 
 #include <iostream>
+#include <variant>
+
+using Data = std::variant<int, long double>;
 
 enum Type {
-    LONG,
     INT,
+    LONG,
     MATRIX,
     FUNC,
     VAR,
@@ -18,6 +21,20 @@ enum Type {
 struct Token {
     void *val = nullptr;
     Type type = NONE; 
+
+    Data get_val() {
+        if (this->type == INT)
+            return *((int *) this->val);
+
+        else if (this->type == LONG)
+            return *((long double *) this->val);
+
+        // else if (this->type == FUNC || this->type == VAR || this->type == OPR
+        //       || this->type == KEY)
+        //     return *((std::string *) this->val);
+        
+        return 1;
+    }
 };
 
 #endif

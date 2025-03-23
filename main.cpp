@@ -2,6 +2,7 @@
 
 #include "lexer.hpp"
 #include "parser.hpp"
+#include "interpreter.hpp"
 
 using std::unordered_map;
 
@@ -75,7 +76,10 @@ int main() {
         Parser parser(tokens);
         root = parser.expression();
         parser.print_tree(root);
-        std::cout << "\n";
+
+        Interpreter interpreter(root);
+        Data res = interpreter.interpret(root);
+        std::visit([](auto&& res) { std::cout << "= " << res << "\n"; }, res);
 
     } while(input != "exit");
 

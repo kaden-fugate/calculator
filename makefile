@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -Wall -g
 TARGET = calc
-SRCS = main.o lexer.o parser.o
+SRCS = main.o lexer.o parser.o interpreter.o
 
 all: $(SRCS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS)
@@ -14,6 +14,9 @@ lexer.o: lexer.cpp lexer.hpp
 
 parser.o: parser.cpp parser.hpp
 	$(CC) $(CFLAGS) -c parser.cpp
+
+interpreter.o: interpreter.cpp interpreter.hpp
+	$(CC) $(CFLAGS) -c interpreter.cpp
 
 clean:
 	rm -rf *.o calc

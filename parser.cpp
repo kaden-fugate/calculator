@@ -2,6 +2,7 @@
 
 string to_str(void *data) { return *((string *) data); }
 int to_int(void *data) { return *((int *) data); }
+long double to_long(void *data) { return *((long double *) data); }
 
 Node* Parser::factor() {
     Node *node = new Node;
@@ -93,7 +94,12 @@ void Parser::print_tree(Node *node) {
 
     // base case, no more nodes, print out val
     if (!node->left && !node->right) {
-        std::cout << to_int(node->val.val) << " ";
+
+        if (node->val.type == INT)
+            std::cout << to_int(node->val.val) << " ";
+        else if (node->val.type == LONG)
+            std::cout << to_long(node->val.val) << " ";
+
         return;
     }
 
