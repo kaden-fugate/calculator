@@ -8,8 +8,20 @@ Node* Parser::factor() {
     Node *node = new Node;
     node->val = this->tokens[this->idx];
 
+    // int or long cases
     if (node->val.type == LONG || node->val.type == INT)
         return node;
+
+    // expression in parentheses
+    else if (node->val.type == OPR && to_str(node->val.val) == "("){
+        this->shift();
+
+        delete node;
+        node = this->expression();
+
+        return node;
+    }
+
 
     return nullptr;
 }
@@ -95,7 +107,9 @@ void Parser::print_tree(Node *node) {
     // base case, no more nodes, print out val
     if (!node->left && !node->right) {
 
-        if (node->val.type == INT)
+        if (node->val.type == OPR)
+            std::cout << to_str(node->val.val) << " ";
+        else if (node->val.type == INT)
             std::cout << to_int(node->val.val) << " ";
         else if (node->val.type == LONG)
             std::cout << to_long(node->val.val) << " ";
