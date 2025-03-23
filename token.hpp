@@ -16,7 +16,7 @@ enum Type {
 
 // will change this later when we want to start adding matrices
 struct Token {
-    std::string val = "";
+    void *val = nullptr;
     Type type = NONE; 
 };
 

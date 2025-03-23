@@ -74,6 +74,8 @@ int main() {
         // parse tokenized input into abstract syntax tree
         Parser parser(tokens);
         root = parser.expression();
+        parser.print_tree(root);
+        std::cout << "\n";
 
     } while(input != "exit");
 

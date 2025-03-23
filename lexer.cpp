@@ -76,13 +76,14 @@ vector<Token> Lexer::tokenize() {
 void Lexer::shift() { this->idx++; }
 
 Token Lexer::extract_num() {
-    Token num {val: "", type: INT};
+    Token token {val: nullptr, type: INT};
+    string num = "";
 
     // get number
     while (this->idx < this->text.length() 
         && valid_digit(this->text[this->idx])){
     
-        num.val += c_to_str(this->text[this->idx]);
+            num += c_to_str(this->text[this->idx]);
         this->shift();
 
     }
@@ -92,58 +93,70 @@ Token Lexer::extract_num() {
 
         if (this->idx + 1 < this->text.length()
             && valid_digit(this->text[this->idx + 1])){
-            num.type = LONG;
-            num.val += c_to_str(this->text[this->idx]);
+            token.type = LONG;
+            num += c_to_str(this->text[this->idx]);
             this->shift();
         }
 
     }
 
     // if decimal, get decimal values
-    if (num.type == LONG) {
+    if (token.type == LONG) {
 
         while (this->idx < this->text.length() 
         && valid_digit(this->text[this->idx])){
     
-            num.val += c_to_str(this->text[this->idx]);
+            num += c_to_str(this->text[this->idx]);
             this->shift();
 
         }
 
+        long double *data = new long double( std::stold(num) );
+        token.val = (void *) data;
+
+    }
+    else { 
+        int *data = new int ( std::stoi(num) );
+        token.val = (void *) data; 
     }
 
-    return num;
+    return token;
 }
 
 Token Lexer::extract_opr() {
-    Token opr {val: c_to_str(this->text[this->idx]), type: OPR};
+    string *data = new string( c_to_str(this->text[this->idx]) );
+
+    Token token {val: (void *) data, type: OPR};
     this->shift();
 
-    return opr;
+    return token;
 }
 
 Token Lexer::extract_word() {
-    Token word{val: "", type: VAR};
+    Token token{val: nullptr, type: VAR};
+    string *data = new string("");
 
     char letter = this->text[this->idx];
 
     // get word
     while (valid_letter(letter) || valid_digit(letter)) {
 
-        word.val += c_to_str(letter);
+        *data += c_to_str(letter);
         this->shift();
 
         letter = this->text[this->idx];
     }
 
     // check if func or keyword, otherwise variable name
-    if (valid_func(word.val))
-        word.type = FUNC;
+    if (valid_func(*data))
+        token.type = FUNC;
 
-    else if (valid_keyword(word.val))
-        word.type = KEY;
+    else if (valid_keyword(*data))
+        token.type = KEY;
 
-    return word;
+    token.val = (void *) data;
+
+    return token;
 }
 
 void Lexer::print_tokens() {

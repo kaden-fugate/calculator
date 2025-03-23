@@ -1,5 +1,8 @@
 #include "parser.hpp"
 
+string to_str(void *data) { return *((string *) data); }
+int to_int(void *data) { return *((int *) data); }
+
 Node* Parser::factor() {
     Node *node = new Node;
     node->val = this->tokens[this->idx];
@@ -17,10 +20,15 @@ Node* Parser::term() {
     this->shift();
 
     // if not operator, error
+    // TODO: make this *actually* throw an error instead of exiting
+    if (this->tokens[this->idx].type != OPR && this->in_bounds()) {
+        std::cout << "<ERROR> PARSER (term): Expected operator!\n";
+        exit(1);
+    }
 
     while (this->in_bounds() &&
-          (this->tokens[this->idx].val == "*" ||
-           this->tokens[this->idx].val == "/")) {
+          (to_str(this->tokens[this->idx].val) == "*" ||
+           to_str(this->tokens[this->idx].val) == "/")) {
 
         // shift previous root to left node of new root
         Node *temp = new Node;
@@ -46,10 +54,14 @@ Node* Parser::expression() {
     Node *root = this->term();
 
     // if not operator, error
+    if (this->tokens[this->idx].type != OPR && this->in_bounds()) {
+        std::cout << "<ERROR> PARSER (expression): Expected operator!\n";
+        exit(1);
+    }
 
     while (this->in_bounds() &&
-          (this->tokens[this->idx].val == "+" ||
-           this->tokens[this->idx].val == "-")) {
+          (to_str(this->tokens[this->idx].val) == "+" ||
+           to_str(this->tokens[this->idx].val) == "-")) {
         
         // shift previous root to left node of new root
         Node *temp = new Node;
@@ -81,7 +93,7 @@ void Parser::print_tree(Node *node) {
 
     // base case, no more nodes, print out val
     if (!node->left && !node->right) {
-        std::cout << node->val.val << " ";
+        std::cout << to_int(node->val.val) << " ";
         return;
     }
 
@@ -89,7 +101,7 @@ void Parser::print_tree(Node *node) {
     print_tree(node->left);
 
     // print operator
-    std::cout << node->opr.val << " ";
+    std::cout << to_str(node->opr.val) << " ";
 
     // right node now
     print_tree(node->right);

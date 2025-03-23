@@ -16,7 +16,7 @@ class Lexer {
         vector<Token> tokens;
         string text = "";
         long unsigned int idx = 0;
-        Token cur_token {val: "", type: INT};
+        Token cur_token {val: nullptr, type: INT};
         vector<string> keys;
         vector<string> funcs;
     
