@@ -20,12 +20,19 @@ class Interpreter {
         Interpreter(Node* root, unordered_map<string, Data> *map) : root(root), 
         map(map) {}
         
+        // main funcs
         Token compute(Token, Token, string);
         Token interpret(Node*);
 
+        // map funcs
         void insert(string, Data);
+        Data read(string);
         bool in_map(string);
         void print_map();
+
+        // token funcs
+        Data get_data(Token);
+
 };
 
 #endif
