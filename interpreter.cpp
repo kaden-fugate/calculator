@@ -7,6 +7,17 @@ bool is_leaf(Node *node) {
     return false;
 }
 
+bool is_unary(Node *node) {
+
+    if (node->left || node->right)
+        return false;
+
+    if (!node->opr.val || !node->val.val)
+        return false;
+
+    return true;
+}
+
 void *to_void_ptr(Data data) {
 
     // convert to whatever T is and allocate new memory with val stored
@@ -89,17 +100,37 @@ Token Interpreter::compute(Token left, Token right, string opr) {
     return token;
 }
 
+Token Interpreter::compute_unary(Node *root) {
+
+    // operator always string, can convert val to Data
+    string opr = root->opr.to_str();
+    Data val = this->get_data(root->val);
+
+    if (opr == "-"){
+        val = std::visit([](auto&& arg) -> Data {
+            return -1 * arg; 
+        }, val);
+    }
+
+    return Token{val: to_void_ptr(val), type: get_type(val)};
+}
+
 Token Interpreter::interpret(Node *root) {
 
     Token left;
     Token right;
 
-    // edge case, passed root is leaf node
+    // edge case, unary expression given (only situation where both operator
+    // and val are stored in a single node)
+    if ( is_unary(root) )
+        return this->compute_unary(root);
+
+    // edge case, passed root is leaf node but not unary expression
     if ( is_leaf(root) )
         return root->val;
 
-    // case where left node is not leaf
-    if ( !is_leaf(root->left) )
+    // case where left node is not leaf or is unary
+    if ( !is_leaf(root->left) || is_unary(root->left))
         left = interpret(root->left);
     else
         left = root->left->val;
@@ -107,8 +138,8 @@ Token Interpreter::interpret(Node *root) {
     // in the future, we can use get_val to retrieve this
     string opr = root->opr.to_str();
 
-    // case where right node is not leaf
-    if ( !is_leaf(root->right) )
+    // case where right node is not leaf or is unary
+    if ( !is_leaf(root->right) || is_unary(root->right) )
         right = interpret(root->right);
     else
         right = root->right->val;
@@ -142,7 +173,7 @@ void Interpreter::print_map() {
         std::cout << pair.first << ": ";
         std::visit([](auto&& res) { std::cout << res << " "; }, pair.second);
     }
-    std::cout << "}";
+    std::cout << "}\n";
 }
 
 Data Interpreter::get_data(Token tok) {

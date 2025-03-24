@@ -43,6 +43,7 @@ struct Token {
     std::string to_str();
     int to_int();
     long double to_long();
+    void print();
 };
 
 #endif

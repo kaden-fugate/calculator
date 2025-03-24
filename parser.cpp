@@ -3,26 +3,33 @@
 
 
 Node* Parser::factor() {
-    Node *node = new Node;
-    node->val = this->tokens[this->idx];
 
     // int or long cases
-    if (node->val.type == LONG || node->val.type == INT)
-        return node;
+    if (this->cur_tok.type == LONG || this->cur_tok.type == INT)
+        return new Node{val: this->cur_tok};
 
     // expression in parentheses
-    else if (node->val.type == OPR && node->val.to_str() == "("){
+    else if (this->cur_tok.type == OPR && this->cur_tok.to_str() == "("){
+
         this->shift();
+        return this->expression();
 
-        delete node;
-        node = this->expression();
-
-        return node;
     }
 
     // token is variable
-    else if (node->val.type == VAR)
+    else if (this->cur_tok.type == VAR)
+        return new Node{val: this->cur_tok};
+
+    // expression is unary
+    else if (this->cur_tok.type == OPR && 
+            (this->cur_tok.to_str() == "+" || this->cur_tok.to_str() == "-")){
+
+        Node *node = new Node{opr: this->cur_tok};
+        this->shift();
+        node->val = this->cur_tok;
+        
         return node;
+    }
 
     return nullptr;
 }
@@ -32,13 +39,6 @@ Node* Parser::term() {
     // store factor in root
     Node *root = this->factor();
     this->shift();
-
-    // if not operator, error
-    // TODO: make this *actually* throw an error instead of exiting
-    if (this->cur_tok.type != OPR && this->in_bounds()) {
-        std::cout << "<ERROR> PARSER (term): Expected operator!\n";
-        exit(1);
-    }
 
     while (this->in_bounds() &&
           (this->cur_tok.to_str() == "*" || this->cur_tok.to_str() == "/")) {
@@ -65,12 +65,6 @@ Node* Parser::expression() {
 
     // store root as term
     Node *root = this->term();
-
-    // if not operator, error
-    if (this->cur_tok.type != OPR && this->in_bounds()) {
-        std::cout << "<ERROR> PARSER (expression): Expected operator!\n";
-        exit(1);
-    }
 
     while (this->in_bounds() &&
           (this->cur_tok.to_str() == "+" ||
@@ -105,8 +99,8 @@ Node *Parser::variable() {
 
 Node *Parser::statement() {
 
-    // check case where 1 or less tokens present
-    if (this->tokens.size() < 2)
+    // check case where 2 or less tokens present
+    if (this->tokens.size() <= 2)
         return this->expression();
 
     // check for declaring variable ("=" as 2nd token)
@@ -149,6 +143,20 @@ void Parser::shift() {
 }
 
 void Parser::print_tree(Node *node) {
+
+    // base case, node is unary
+    if (node->val.val && node->opr.val) {
+        std::cout << node->opr.to_str();
+
+        if (node->val.type == OPR || node->val.type == VAR)
+            std::cout << node->val.to_str() << " ";
+        else if (node->val.type == INT)
+            std::cout << node->val.to_int() << " ";
+        else if (node->val.type == LONG)
+            std::cout << node->val.to_long() << " ";
+
+        return;
+    }
 
     // base case, no more nodes, print out val
     if (!node->left && !node->right) {

@@ -65,7 +65,6 @@ int main() {
 
         // user input
         input = get_input();
-        std::cout << "input: " << input << std::endl;
 
         // tokenize user input
         Lexer lexer(input, keywords, funcs);
@@ -74,11 +73,20 @@ int main() {
         // parse tokenized input into abstract syntax tree
         Parser parser(tokens);
         root = parser.statement();
+
+        std::cout << "\nTREE:\t";
         parser.print_tree(root);
+        std::cout << "\n";
 
         Interpreter interpreter(root, &vars);
         Token res = interpreter.interpret(root);
+
+        std::cout << "\nMAP:\t";
         interpreter.print_map();
+
+        std::cout << "\nans:\t";
+        res.print();
+        std::cout << "\n";
 
     } while(input != "exit");
 
