@@ -163,9 +163,24 @@ void Lexer::print_tokens() {
 
     std::cout << "TOKENS: \n";
 
+    Data val;
+
     for (long unsigned int i = 0; i < this->tokens.size(); i++){
-        std::cout << "(" << this->tokens[i].val << " " 
-                  << this->tokens[i].type << "), ";
+
+        string opr = "";
+        bool is_opr = !(this->tokens[i].type == LONG || this->tokens[i].type == INT);
+
+        if (!is_opr){
+            val = this->tokens[i].get_val();
+            std::visit([](auto&& val) {
+                std::cout << "(" << val << " ";
+            }, val);
+            std::cout << this->tokens[i].type << "), ";
+        }
+        else { 
+            opr = this->tokens[i].to_str();
+            std::cout << "(" << opr << " " << this->tokens[i].type << "), ";
+        }
     }
     std::cout << "\n";
 }

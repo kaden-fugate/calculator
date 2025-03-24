@@ -1,10 +1,8 @@
-#include <unordered_map>
-
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "interpreter.hpp"
 
-using std::unordered_map;
+
 
 string get_input() {
 
@@ -60,6 +58,7 @@ int main() {
     vector<string> keywords = {"let"};
     vector<string> funcs = {"func"};
     Node *root = nullptr;
+    std::unordered_map<string, Data> vars = { };
 
     // do prompt loop while user input is not 'exit'
     do {
@@ -74,12 +73,12 @@ int main() {
 
         // parse tokenized input into abstract syntax tree
         Parser parser(tokens);
-        root = parser.expression();
+        root = parser.statement();
         parser.print_tree(root);
 
-        Interpreter interpreter(root);
-        Data res = interpreter.interpret(root);
-        std::visit([](auto&& res) { std::cout << "= " << res << "\n"; }, res);
+        Interpreter interpreter(root, &vars);
+        Token res = interpreter.interpret(root);
+        interpreter.print_map();
 
     } while(input != "exit");
 

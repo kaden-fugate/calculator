@@ -22,19 +22,11 @@ struct Token {
     void *val = nullptr;
     Type type = NONE; 
 
-    Data get_val() {
-        if (this->type == INT)
-            return *((int *) this->val);
+    Data get_val();
 
-        else if (this->type == LONG)
-            return *((long double *) this->val);
-
-        // else if (this->type == FUNC || this->type == VAR || this->type == OPR
-        //       || this->type == KEY)
-        //     return *((std::string *) this->val);
-        
-        return 1;
-    }
+    std::string to_str();
+    int to_int();
+    long double to_long();
 };
 
 #endif

@@ -2,23 +2,30 @@
 #define INTERPRETER_HPP
 
 #include <variant>
+#include <unordered_map>
 
 #include "token.hpp"
 #include "node.hpp"
 #include "operators.hpp"
 
-using std::variant;
+using std::variant, std::unordered_map, std::string;
 
 class Interpreter {
     private:
         Node *root = nullptr;
+        unordered_map<string, Data> *map = nullptr;
     
     public:
-        Interpreter() {}
-        Interpreter(Node* root) : root(root) {}
+        Interpreter(){}
+        Interpreter(Node* root, unordered_map<string, Data> *map) : root(root), 
+        map(map) {}
         
-        Data compute(Data, Data, std::string);
-        Data interpret(Node*);
+        Token compute(Token, Token, string);
+        Token interpret(Node*);
+
+        void insert(string, Data);
+        bool in_map(string);
+        void print_map();
 };
 
 #endif

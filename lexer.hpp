@@ -6,10 +6,11 @@
 #include <stdexcept>
 #include <sstream>
 #include <vector>
+#include <variant>
 
 #include "token.hpp"
 
-using std::string, std::vector;
+using std::string, std::vector, std::variant;
 
 class Lexer {
     private:
