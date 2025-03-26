@@ -23,6 +23,20 @@ bool valid_opr(char letter) {
     return false;
 }
 
+bool valid_bool(char letter) {
+    if (letter == '&' || letter == '|' || letter == '!')
+        return true;
+
+    return false;
+}
+
+bool valid_comp(char letter) {
+    if (letter == '<' || letter == '>' || letter == '=')
+        return true;
+
+    return false;
+}
+
 bool Lexer::valid_func(string word) {
     for (unsigned long int i = 0; i < this->funcs.size(); i++){
         if (this->funcs[i] == word)
@@ -41,6 +55,7 @@ bool Lexer::valid_keyword(string word) {
     return false;
 }
 
+
 string c_to_str(char letter) {
     return string(1, letter);
 }
@@ -55,10 +70,18 @@ vector<Token> Lexer::tokenize() {
         // extract number
         if (valid_digit(letter))
             this->tokens.push_back( this->extract_num() );
+
+        // exract comparison operator
+        else if (this->check_comp())
+            this->tokens.push_back( this->extract_comp() );
         
-        // extract operator
+        // extract arithmetic operator
         else if (valid_opr(letter))
             this->tokens.push_back( this->extract_opr() );
+
+        // extract boolean operator
+        else if (valid_bool(letter))
+            this->tokens.push_back( this->extract_bool() );
 
         // extract word
         else if (valid_letter(letter))
@@ -72,8 +95,6 @@ vector<Token> Lexer::tokenize() {
 
     return this->tokens;
 }
-
-void Lexer::shift() { this->idx++; }
 
 Token Lexer::extract_num() {
     Token token {val: nullptr, type: INT};
@@ -159,9 +180,59 @@ Token Lexer::extract_word() {
     return token;
 }
 
-void Lexer::print_tokens() {
+Token Lexer::extract_bool() {
+    string *data = new string( c_to_str(this->text[this->idx]) );
 
-    std::cout << "TOKENS: \n";
+    Token token {val: (void *) data, type: BOOL};
+    this->shift();
+
+    return token;
+}
+
+Token Lexer::extract_comp() {
+
+    Token token{val: nullptr, type: COMP};
+    string *data = new string("");
+
+    char letter = this->text[this->idx];
+
+    // get word
+    while (valid_comp(letter)) {
+
+        *data += c_to_str(letter);
+        this->shift();
+
+        letter = this->text[this->idx];
+    }
+
+    token.val = (void *) data;
+
+    return token;
+
+}
+
+void Lexer::shift() { this->idx++; }
+
+bool Lexer::check_comp() {
+
+    // check that theres another character after current idx, check that first
+    // character is comparison char
+    if (this->idx + 1 < this->text.length() && valid_comp(this->text[this->idx])){
+
+        if (this->text[this->idx] == '='){
+
+            if (this->text[this->idx + 1] == '=')
+                return true;
+
+        }
+        else return true;
+        
+    }
+
+    return false;
+}
+
+void Lexer::print_tokens() {
 
     Data val;
 

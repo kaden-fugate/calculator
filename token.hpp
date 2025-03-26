@@ -14,6 +14,8 @@ enum Type {
     VAR,
     OPR,
     KEY,
+    BOOL,
+    COMP,
     NONE
 };
 

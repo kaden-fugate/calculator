@@ -25,6 +25,41 @@ struct Div {
     static Data apply(T1 a, T2 b) { return a / b; }
 };
 
+struct Or {
+    template <typename T1, typename T2>
+    static Data apply(T1 a, T2 b) { return a || b; }
+};
+
+struct And {
+    template <typename T1, typename T2>
+    static Data apply(T1 a, T2 b) { return a && b; }
+};
+
+struct Less {
+    template <typename T1, typename T2>
+    static Data apply(T1 a, T2 b) { return a < b; }
+};
+
+struct Greater {
+    template <typename T1, typename T2>
+    static Data apply(T1 a, T2 b) { return a > b; }
+};
+
+struct Leq {
+    template <typename T1, typename T2>
+    static Data apply(T1 a, T2 b) { return a <= b; }
+};
+
+struct Geq {
+    template <typename T1, typename T2>
+    static Data apply(T1 a, T2 b) { return a >= b; }
+};
+
+struct Eq {
+    template <typename T1, typename T2>
+    static Data apply(T1 a, T2 b) { return a == b; }
+};
+
 template <typename Op>
 struct OperatorVisitor {
 

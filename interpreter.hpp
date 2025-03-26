@@ -22,7 +22,7 @@ class Interpreter {
         
         // main funcs
         Token compute(Token, Token, string);
-        Token compute_unary(Node*);
+        Token compute_unary(Token, string);
         Token interpret(Node*);
 
         // map funcs

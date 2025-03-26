@@ -1,6 +1,14 @@
 #include "parser.hpp"
 
+Node *Parser::variable() {
+    if (this->cur_tok.type == VAR){
+        Node *node = new Node;
+        node->val = this->cur_tok;
+        return node;
+    }
 
+    return nullptr;
+}
 
 Node* Parser::factor() {
 
@@ -12,7 +20,7 @@ Node* Parser::factor() {
     else if (this->cur_tok.type == OPR && this->cur_tok.to_str() == "("){
 
         this->shift();
-        return this->expression();
+        return this->bool_expression();
 
     }
 
@@ -20,13 +28,25 @@ Node* Parser::factor() {
     else if (this->cur_tok.type == VAR)
         return new Node{val: this->cur_tok};
 
-    // expression is unary
-    else if (this->cur_tok.type == OPR && 
-            (this->cur_tok.to_str() == "+" || this->cur_tok.to_str() == "-")){
+    // not operator
+    else if (this->cur_tok.type == BOOL && this->cur_tok.to_str() == "!") {
 
         Node *node = new Node{opr: this->cur_tok};
         this->shift();
-        node->val = this->cur_tok;
+        node->left = this->factor();
+
+        return node;
+
+    }
+
+    // expression is unary
+    else if ((this->cur_tok.type == OPR || this->cur_tok.type == BOOL) && 
+            (this->cur_tok.to_str() == "+" || this->cur_tok.to_str() == "-" 
+          || this->cur_tok.to_str() == "!")){
+
+        Node *node = new Node{opr: this->cur_tok};
+        this->shift();
+        node->left = this->factor();
         
         return node;
     }
@@ -87,21 +107,59 @@ Node* Parser::expression() {
 
 }
 
-Node *Parser::variable() {
-    if (this->cur_tok.type == VAR){
-        Node *node = new Node;
-        node->val = this->cur_tok;
-        return node;
-    }
+Node *Parser::comp_expression() {
 
-    return nullptr;
+    // store root as term
+    Node *root = this->expression();
+
+    while (this->in_bounds() && this->cur_tok.type == COMP) {
+        
+        // shift previous root to left node of new root
+        Node *temp = new Node;
+        temp->left = root;
+        root = temp;
+        
+        // set operator, shift ahead
+        root->opr = cur_tok;
+        this->shift();
+
+        // get term to right of operator
+        root->right = this->expression();
+    }
+    
+    return root; 
+
+}
+
+Node *Parser::bool_expression() {
+
+    // store root as term
+    Node *root = this->comp_expression();
+
+    while (this->in_bounds() && this->cur_tok.type == BOOL) {
+        
+        // shift previous root to left node of new root
+        Node *temp = new Node;
+        temp->left = root;
+        root = temp;
+        
+        // set operator, shift ahead
+        root->opr = cur_tok;
+        this->shift();
+
+        // get term to right of operator
+        root->right = this->comp_expression();
+    }
+    
+    return root; 
+
 }
 
 Node *Parser::statement() {
 
     // check case where 2 or less tokens present
     if (this->tokens.size() <= 2)
-        return this->expression();
+        return this->bool_expression();
 
     // check for declaring variable ("=" as 2nd token)
     else if (this->tokens[1].type == OPR && this->tokens[1].to_str() == "="){
@@ -117,13 +175,13 @@ Node *Parser::statement() {
         this->shift();
 
         // right node is evaluated expression
-        root->right = this->expression();
+        root->right = this->bool_expression();
 
         return root;
     }
 
     else 
-        return this->expression();
+        return this->bool_expression();
 
     return nullptr;
 }
@@ -145,15 +203,9 @@ void Parser::shift() {
 void Parser::print_tree(Node *node) {
 
     // base case, node is unary
-    if (node->val.val && node->opr.val) {
+    if (node->opr.val && node->left && !node->right) {
         std::cout << node->opr.to_str();
-
-        if (node->val.type == OPR || node->val.type == VAR)
-            std::cout << node->val.to_str() << " ";
-        else if (node->val.type == INT)
-            std::cout << node->val.to_int() << " ";
-        else if (node->val.type == LONG)
-            std::cout << node->val.to_long() << " ";
+        print_tree(node->left);
 
         return;
     }

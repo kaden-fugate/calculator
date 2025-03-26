@@ -20,23 +20,32 @@ class Lexer {
         Token cur_token {val: nullptr, type: INT};
         vector<string> keys;
         vector<string> funcs;
+        vector<string> bools;
     
     public:
 
         // constructors
         Lexer() {}
-        Lexer(string text, vector<string> keys, vector<string> funcs) : 
-            text(text), keys(keys), funcs(funcs) {}
+        Lexer(string text, vector<string> keys, vector<string> funcs,
+              vector<string> bools) : 
+            text(text), keys(keys), funcs(funcs), bools(bools) {}
 
-        // functionalities
+        // main function
         vector<Token> tokenize();
-        void shift();
+
+        // important extraction functions
         Token extract_num();
         Token extract_opr();
         Token extract_word();
-        void print_tokens();
+        Token extract_bool();
+        Token extract_comp();
+        
+        // helper functions
         bool valid_func(string);
         bool valid_keyword(string);
+        void print_tokens();
+        void shift();
+        bool check_comp();
     
     
 };

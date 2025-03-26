@@ -57,6 +57,7 @@ int main() {
     vector<Token> tokens;
     vector<string> keywords = {"let"};
     vector<string> funcs = {"func"};
+    vector<string> bools = {"&", "|", "!"};
     Node *root = nullptr;
     std::unordered_map<string, Data> vars = { };
 
@@ -67,19 +68,24 @@ int main() {
         input = get_input();
 
         // tokenize user input
-        Lexer lexer(input, keywords, funcs);
+        Lexer lexer(input, keywords, funcs, bools);
         tokens = lexer.tokenize();
 
         // parse tokenized input into abstract syntax tree
         Parser parser(tokens);
         root = parser.statement();
 
+        Interpreter interpreter(root, &vars);
+        Token res = interpreter.interpret(root);
+
+        // debug statements
+        std::cout << "\nTOKENS:\t";
+        lexer.print_tokens();
+        std::cout << "\n";
+
         std::cout << "\nTREE:\t";
         parser.print_tree(root);
         std::cout << "\n";
-
-        Interpreter interpreter(root, &vars);
-        Token res = interpreter.interpret(root);
 
         std::cout << "\nMAP:\t";
         interpreter.print_map();

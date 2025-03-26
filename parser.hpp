@@ -19,11 +19,13 @@ class Parser {
         Parser() {}
         Parser(vector<Token> tokens) : tokens(tokens){}
 
+        Node *statement();
+        Node *bool_expression();
+        Node *comp_expression();
         Node* expression();
         Node* term();
         Node* factor();
         Node *variable();
-        Node *statement();
 
         bool in_bounds();
         void shift();

@@ -9,13 +9,10 @@ bool is_leaf(Node *node) {
 
 bool is_unary(Node *node) {
 
-    if (node->left || node->right)
-        return false;
+    if (node->opr.val && node->left && !node->right)
+        return true;
 
-    if (!node->opr.val || !node->val.val)
-        return false;
-
-    return true;
+    return false;
 }
 
 void *to_void_ptr(Data data) {
@@ -47,6 +44,7 @@ Data call_opr(Data data1, Data data2, string opr) {
 
     Data data;
 
+    // disgustingly long if else statement
     if (opr == "+")
         data = std::visit(OperatorVisitor<Add>{}, data1, data2);
     else if (opr == "-")
@@ -55,6 +53,20 @@ Data call_opr(Data data1, Data data2, string opr) {
         data = std::visit(OperatorVisitor<Mult>{}, data1, data2);
     else if (opr == "/")
         data = std::visit(OperatorVisitor<Div>{}, data1, data2);
+    else if (opr == "|")
+        data = std::visit(OperatorVisitor<Or>{}, data1, data2);
+    else if (opr == "&")
+        data = std::visit(OperatorVisitor<And>{}, data1, data2);
+    else if (opr == "<")
+        data = std::visit(OperatorVisitor<Less>{}, data1, data2);
+    else if (opr == ">")
+        data = std::visit(OperatorVisitor<Greater>{}, data1, data2);
+    else if (opr == "<=")
+        data = std::visit(OperatorVisitor<Leq>{}, data1, data2);
+    else if (opr == ">=")
+        data = std::visit(OperatorVisitor<Geq>{}, data1, data2);
+    else if (opr == "==")
+        data = std::visit(OperatorVisitor<Geq>{}, data1, data2);
 
     return data;
 
@@ -67,9 +79,6 @@ Token Interpreter::compute(Token left, Token right, string opr) {
     // if assignment, make token with rights data stored (casted to void*) and
     // rights data type stored
     if (opr == "=") {
-        
-        // will have to convert rights value to int/long before this (if token
-        // type not INT or LONG)
 
         // get key (variable to assign to) from token and data (computed RHS)
         string key = left.to_str();
@@ -89,8 +98,6 @@ Token Interpreter::compute(Token left, Token right, string opr) {
     // (these will be int, long, var, etc.)
     Data data_left = this->get_data(left);
     Data data_right = this->get_data(right);
-
-    // handle converting non int/long data types to int/long here
     
     data = call_opr(data_left, data_right, opr);
 
@@ -100,15 +107,20 @@ Token Interpreter::compute(Token left, Token right, string opr) {
     return token;
 }
 
-Token Interpreter::compute_unary(Node *root) {
+Token Interpreter::compute_unary(Token operand, string opr) {
 
     // operator always string, can convert val to Data
-    string opr = root->opr.to_str();
-    Data val = this->get_data(root->val);
+    Data val = this->get_data(operand);
 
     if (opr == "-"){
         val = std::visit([](auto&& arg) -> Data {
             return -1 * arg; 
+        }, val);
+    }
+
+    else if (opr == "!"){
+        val = std::visit([](auto&& arg) -> Data {
+            return !arg; 
         }, val);
     }
 
@@ -123,7 +135,7 @@ Token Interpreter::interpret(Node *root) {
     // edge case, unary expression given (only situation where both operator
     // and val are stored in a single node)
     if ( is_unary(root) )
-        return this->compute_unary(root);
+        return this->compute_unary(this->interpret(root->left), root->opr.to_str());
 
     // edge case, passed root is leaf node but not unary expression
     if ( is_leaf(root) )
