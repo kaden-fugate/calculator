@@ -17,7 +17,7 @@ bool valid_letter(char letter) {
 
 bool valid_opr(char letter) {
     if (letter == '+' || letter == '-' || letter == '*' || letter == '/'
-     || letter == '(' || letter == ')' || letter == '=')
+     || letter == '(' || letter == ')' || letter == '=' || letter == ';')
         return true;
 
     return false;
@@ -47,7 +47,7 @@ bool Lexer::valid_func(string word) {
 }
 
 bool Lexer::valid_keyword(string word) {
-    for (unsigned long int i = 0; i < this->funcs.size(); i++){
+for (unsigned long int i = 0; i < this->keys.size(); i++){
         if (this->keys[i] == word)
             return true;
     }

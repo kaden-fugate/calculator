@@ -19,6 +19,7 @@ class Parser {
         Parser() {}
         Parser(vector<Token> tokens) : tokens(tokens){}
 
+        vector<Node*> parse_program();
         Node *statement();
         Node *bool_expression();
         Node *comp_expression();
@@ -27,6 +28,7 @@ class Parser {
         Node* factor();
         Node *variable();
 
+        bool valid();
         bool in_bounds();
         void shift();
         void print_tree(Node*);

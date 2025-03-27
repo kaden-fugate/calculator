@@ -2,7 +2,15 @@
 #include "parser.hpp"
 #include "interpreter.hpp"
 
+#include <fstream>
+using std::ifstream, std::stringstream;
 
+vector<Token> tokens;
+vector<string> keywords = {"let"};
+vector<string> funcs = {"func"};
+vector<string> bools = {"&", "|", "!"};
+Node *root = nullptr;
+vector<Node*> exprs;
 
 string get_input() {
 
@@ -14,70 +22,21 @@ string get_input() {
 
 }
 
-int main() {
+void parse_expression(string input, unordered_map<string, Data> *vars, 
+    bool debug) {
 
-    // need to do a few things in main:
-    //
-    // 1. we need to allocate some memory for variables that the user can
-    //    declare
-    // 2. prompt user
-    // 3. need to get prompt from user
-    // 4. 
-    //      a. if declaring variable, we can add it to the variable list
-    //      b. if doing operation, compute operation and store in ans variable
-    //         in variable list
-    //      c. if calling function, output result of function to terminal
-    //      d. if 'exit', free memory, exit program
-    //      e. if existing variable name, print "<var_name> = <var_val>"
-    //      f. if 'var_list' is user input, print all variables and their 
-    //         values
-    //         - note: matrices/vectors will simply print their dimensions
-    //      f. if error, catch error and output error message to terminal
+    // tokenize user input
+    Lexer lexer(input, keywords, funcs, bools);
+    tokens = lexer.tokenize();
 
-    // we'll need to declare the memory for variables here but we'll need to
-    // further examine how we can store all types of user variables. first, 
-    // lets examine what kind of variables we'll need to store:
-    //
-    // 1. default data types like int, float, (maybe) string, etc.
-    // 2. 2d vector of anything in 1 (the above line).
-    //
-    // to be able to efficiently store all of these things, we'll need to do
-    // two things: 
-    // 
-    // 1. make a hash map that will store variables and their name as a
-    //    key-value pair
-    // 2. define some kind of structure where we can define a variable
-    //      a. store primative data types (i.e. int, float, etc.) in a derived
-    //         class
-    //      b. store matrices/vectors in another derived class
-    //      - note: we'll type cast these to a pointer of the parent class so
-    //              that we can store both in the map
+    // parse tokenized input into abstract syntax tree
+    Parser parser(tokens);
+    root = parser.statement();
 
-    string input = "";
-    vector<Token> tokens;
-    vector<string> keywords = {"let"};
-    vector<string> funcs = {"func"};
-    vector<string> bools = {"&", "|", "!"};
-    Node *root = nullptr;
-    std::unordered_map<string, Data> vars = { };
+    Interpreter interpreter(root, vars);
+    Token res = interpreter.interpret(root);
 
-    // do prompt loop while user input is not 'exit'
-    do {
-
-        // user input
-        input = get_input();
-
-        // tokenize user input
-        Lexer lexer(input, keywords, funcs, bools);
-        tokens = lexer.tokenize();
-
-        // parse tokenized input into abstract syntax tree
-        Parser parser(tokens);
-        root = parser.statement();
-
-        Interpreter interpreter(root, &vars);
-        Token res = interpreter.interpret(root);
-
+    if (debug){
         // debug statements
         std::cout << "\nTOKENS:\t";
         lexer.print_tokens();
@@ -93,10 +52,81 @@ int main() {
         std::cout << "\nans:\t";
         res.print();
         std::cout << "\n";
+    }
 
-    } while(input != "exit");
+}
+
+void parse_file(ifstream &file, unordered_map<string, Data> *vars, bool debug){
+    stringstream buffer;
+    buffer << file.rdbuf();
+
+    string content = buffer.str();
+    
+    // tokenize user input
+    Lexer lexer(content, keywords, funcs, bools);
+    tokens = lexer.tokenize();
+
+    if (debug) {
+        std::cout << "\nTOKENS:\t";
+        lexer.print_tokens();
+        std::cout << "\n";
+    }
+
+    // parse tokenized input into abstract syntax tree
+    Parser parser(tokens);
+    exprs = parser.parse_program();
+
+    Token res;
+    for (unsigned long int i = 0; i < exprs.size(); i++) {
+        Interpreter interpreter(exprs[i], vars);
+        res = interpreter.interpret(exprs[i]);
+
+        if (debug) {
+            std::cout << "\nTREE:\t";
+            parser.print_tree(exprs[i]);
+            std::cout << "\n";
+    
+            std::cout << "\nMAP:\t";
+            interpreter.print_map();
+    
+            std::cout << "\nans:\t";
+            res.print();
+            std::cout << "\n";
+        }
+
+    }
+
+}
+
+int main(int argc, char *argv[]) {
+
+    string input = "";
+    std::unordered_map<string, Data> vars = {};
+
+    // if user passes a file to be parsed
+    if (argc > 1) {
+        ifstream file(argv[1]);
+        parse_file(file, &vars, true);
+    }
+
+    // if user in command-line mode
+    else {
+
+        // do prompt loop while user input is not 'exit'
+        do {
+
+            // user input then parse expression
+            input = get_input();
+            parse_expression(input, &vars, true);
+
+        } while(input != "exit");
+
+    }
+
+    
 
     // free mem
+    // wow i really need to work on freeing the memory soon
 
     return 0;
 }

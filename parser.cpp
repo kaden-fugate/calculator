@@ -1,5 +1,9 @@
 #include "parser.hpp"
 
+bool Parser::valid() {
+    return this->in_bounds() && this->cur_tok.to_str() != ";";
+}
+
 Node *Parser::variable() {
     if (this->cur_tok.type == VAR){
         Node *node = new Node;
@@ -60,7 +64,7 @@ Node* Parser::term() {
     Node *root = this->factor();
     this->shift();
 
-    while (this->in_bounds() &&
+    while (this->valid() &&
           (this->cur_tok.to_str() == "*" || this->cur_tok.to_str() == "/")) {
 
         // shift previous root to left node of new root
@@ -86,7 +90,7 @@ Node* Parser::expression() {
     // store root as term
     Node *root = this->term();
 
-    while (this->in_bounds() &&
+    while (this->valid() &&
           (this->cur_tok.to_str() == "+" ||
           this->cur_tok.to_str() == "-")) {
         
@@ -112,7 +116,7 @@ Node *Parser::comp_expression() {
     // store root as term
     Node *root = this->expression();
 
-    while (this->in_bounds() && this->cur_tok.type == COMP) {
+    while (this->valid() && this->cur_tok.type == COMP) {
         
         // shift previous root to left node of new root
         Node *temp = new Node;
@@ -136,7 +140,7 @@ Node *Parser::bool_expression() {
     // store root as term
     Node *root = this->comp_expression();
 
-    while (this->in_bounds() && this->cur_tok.type == BOOL) {
+    while (this->valid() && this->cur_tok.type == BOOL) {
         
         // shift previous root to left node of new root
         Node *temp = new Node;
@@ -184,6 +188,18 @@ Node *Parser::statement() {
         return this->bool_expression();
 
     return nullptr;
+}
+
+vector<Node*> Parser::parse_program() {
+
+    vector<Node*> res = {};
+
+    while (this->idx < this->tokens.size()) {
+        res.push_back( this->statement() );
+        this->shift();
+    }
+
+    return res;
 }
 
 bool Parser::in_bounds() {
