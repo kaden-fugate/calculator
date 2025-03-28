@@ -17,7 +17,8 @@ bool valid_letter(char letter) {
 
 bool valid_opr(char letter) {
     if (letter == '+' || letter == '-' || letter == '*' || letter == '/'
-     || letter == '(' || letter == ')' || letter == '=' || letter == ';')
+     || letter == '(' || letter == ')' || letter == '=' || letter == ';'
+     || letter == '{' || letter == '}')
         return true;
 
     return false;
@@ -172,9 +173,14 @@ Token Lexer::extract_word() {
     if (valid_func(*data))
         token.type = FUNC;
 
-    else if (valid_keyword(*data))
-        token.type = KEY;
-
+    else if (valid_keyword(*data)){
+        if (*data == "if")
+            token.type = IF;
+        else if (*data == "else")
+            token.type = ELSE;
+        else if (*data == "while")
+            token.type = WHILE;
+    }
     token.val = (void *) data;
 
     return token;

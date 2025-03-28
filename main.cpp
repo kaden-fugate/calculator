@@ -6,7 +6,7 @@
 using std::ifstream, std::stringstream;
 
 vector<Token> tokens;
-vector<string> keywords = {"let"};
+vector<string> keywords = {"if", "else", "while"};
 vector<string> funcs = {"func"};
 vector<string> bools = {"&", "|", "!"};
 Node *root = nullptr;
@@ -78,20 +78,20 @@ void parse_file(ifstream &file, unordered_map<string, Data> *vars, bool debug){
 
     Token res;
     for (unsigned long int i = 0; i < exprs.size(); i++) {
-        Interpreter interpreter(exprs[i], vars);
-        res = interpreter.interpret(exprs[i]);
+        // Interpreter interpreter(exprs[i], vars);
+        // res = interpreter.interpret(exprs[i]);
 
         if (debug) {
-            std::cout << "\nTREE:\t";
+            std::cout << "\nTREE:\n";
             parser.print_tree(exprs[i]);
             std::cout << "\n";
     
-            std::cout << "\nMAP:\t";
-            interpreter.print_map();
+            // std::cout << "\nMAP:\t";
+            // interpreter.print_map();
     
-            std::cout << "\nans:\t";
-            res.print();
-            std::cout << "\n";
+            // std::cout << "\nans:\t";
+            // res.print();
+            // std::cout << "\n";
         }
 
     }

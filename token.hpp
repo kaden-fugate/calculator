@@ -7,15 +7,10 @@
 using Data = std::variant<int, long double>;
 
 enum Type {
-    INT,
-    LONG,
-    MATRIX,
-    FUNC,
-    VAR,
-    OPR,
-    KEY,
-    BOOL,
-    COMP,
+    INT, LONG, MATRIX,              // data types
+    FUNC, VAR, OPR,                 // string-able types
+    BOOL, COMP,                     // expression types
+    IF, ELSE, WHILE,                // block types
     NONE
 };
 

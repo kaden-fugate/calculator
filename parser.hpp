@@ -20,6 +20,7 @@ class Parser {
         Parser(vector<Token> tokens) : tokens(tokens){}
 
         vector<Node*> parse_program();
+        Node *parse_block();
         Node *statement();
         Node *bool_expression();
         Node *comp_expression();
