@@ -15,6 +15,16 @@ bool is_unary(Node *node) {
     return false;
 }
 
+bool is_block(Node *node) {
+
+    if (node->opr.type == IF || node->opr.type == ELSE 
+        || node->opr.type == WHILE)
+        return true;
+
+    return false;
+
+}
+
 void *to_void_ptr(Data data) {
 
     // convert to whatever T is and allocate new memory with val stored
@@ -127,17 +137,58 @@ Token Interpreter::compute_unary(Token operand, string opr) {
     return Token{val: to_void_ptr(val), type: get_type(val)};
 }
 
+Token Interpreter::interpret_block(Node *block) {
+
+    Data condition;
+    bool cond_true;
+    
+    do {
+
+        // get condition from block node
+        if (block->opr.type != ELSE){
+            condition = this->interpret(block->left).get_val();
+            cond_true = std::visit([](auto&& arg) -> bool {
+                return (bool) arg; 
+            }, condition);
+        }
+
+        // if condition is true or this is an else statement, compute the
+        // block of code. if block is while loop, this code will be skipped 
+        if (block->opr.type == ELSE || cond_true) {
+
+            for (unsigned long int i = 0; i < block->block.size(); i++)
+                this->interpret(block->block[i]);
+
+        }
+
+        // if we have an if-statement, it should interpret the else block 
+        // instead (if else block is defined)
+        else if (block->opr.type == IF && block->right && !cond_true)
+            this->interpret_block(block->right);
+        
+        // repeat if while loop and condition still holds
+    } while(block->opr.type == WHILE && cond_true);
+
+    // an if statement should return nothing or an array of tokens, im not
+    // completely sure
+    return Token{type: block->opr.type};
+}
+
 Token Interpreter::interpret(Node *root) {
 
     Token left;
     Token right;
 
-    // edge case, unary expression given (only situation where both operator
+    // case, node is a block node
+    if ( is_block(root) )
+        return this->interpret_block(root);
+
+    // case, unary expression given (only situation where both operator
     // and val are stored in a single node)
     if ( is_unary(root) )
         return this->compute_unary(this->interpret(root->left), root->opr.to_str());
 
-    // edge case, passed root is leaf node but not unary expression
+    // case, passed root is leaf node but not unary expression
     if ( is_leaf(root) )
         return root->val;
 

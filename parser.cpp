@@ -235,7 +235,9 @@ vector<Node*> Parser::parse_program() {
 
     while (this->idx < this->tokens.size()) {
         res.push_back( this->statement() );
-        this->shift();
+
+        if (this->cur_tok.type == OPR && this->cur_tok.to_str() == ";")
+            this->shift();
     }
 
     return res;

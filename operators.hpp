@@ -60,8 +60,18 @@ struct Eq {
     static Data apply(T1 a, T2 b) { return a == b; }
 };
 
+struct Bool {
+    template <typename T>
+    static bool apply(T a) { return (bool) a; }
+};
+
 template <typename Op>
 struct OperatorVisitor {
+
+    template <typename T>
+    Data operator()(T a) const {
+        return Op::apply(a);
+    }
 
     template <typename T1, typename T2>
     Data operator()(T1 a, T2 b) const {

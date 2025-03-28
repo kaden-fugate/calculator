@@ -22,6 +22,11 @@ void Token::print() {
         std::visit([](auto&& arg) { std::cout << arg << '\n'; }, this->get_val());
     }
 
+    else if (this->type == IF || this->type == ELSE || this->type == WHILE){
+        std::cout << (this->type == IF ? "IF" 
+        : (this->type == ELSE ? "ELSE" : "WHILE")) << "\n";
+    }
+
     else std::cout << this->to_str() << '\n';
 
 }
